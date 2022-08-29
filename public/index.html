@@ -78,8 +78,10 @@
               />
             </div>
             <p class="mb-0">
-              <strong>Important:</strong> Do not give this JWT to anyone or any
-              system that you do not trust.
+              <strong>Important:</strong> Do not send this JWT to anyone or any
+              system that you do not trust. This JWT expires
+              <span x-text="$store.expiry"></span> after issuance. Once it
+              expires, you must get a new token.
             </p>
           </div>
         </div>
@@ -131,10 +133,17 @@ console.log(result)
       function handleCredentialResponse(response) {
         Alpine.store('nojwt', false)
         Alpine.store('jwt', response.credential)
+        const parts = response.credential.split('.')
+        const payload = JSON.parse(atob(parts[1]))
+        Alpine.store(
+          'expiry',
+          Math.round((payload.exp - payload.iat) / 60) + ' minutes',
+        )
       }
       document.addEventListener('alpine:init', () => {
         Alpine.store('nojwt', true)
         Alpine.store('jwt', '')
+        Alpine.store('expiry', '…')
         Alpine.store('copy', () => {
           const input = document.querySelector('#jwt')
           input.focus()
