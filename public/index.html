@@ -17,7 +17,6 @@
       integrity="sha256-h/qtq9bUnXbOOwP4EcbLtYM9Mk3iQQcHZAZ+Jz5y0WQ="
       crossorigin="anonymous"
     />
-
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.10.3/dist/cdn.min.js"
@@ -139,6 +138,7 @@ console.log(result)
           'expiry',
           Math.round((payload.exp - payload.iat) / 60) + ' minutes',
         )
+        document.dispatchEvent(new CustomEvent('jwt-dispenser:generated'))
       }
       document.addEventListener('alpine:init', () => {
         Alpine.store('nojwt', true)
@@ -149,6 +149,7 @@ console.log(result)
           input.focus()
           input.select()
           document.execCommand('copy')
+          document.dispatchEvent(new CustomEvent('jwt-dispenser:copied'))
         })
       })
     </script>
@@ -157,5 +158,30 @@ console.log(result)
       integrity="sha256-S5mU/F9EHUxP/yPe4lNcCQEL+TsdkMLHKwQww9PxAI4="
       crossorigin="anonymous"
     ></script>
+
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js'
+      import {
+        getAnalytics,
+        logEvent,
+      } from 'https://www.gstatic.com/firebasejs/9.9.3/firebase-analytics.js'
+      const firebaseConfig = {
+        apiKey: 'AIzaSyBNQKLgU4d4Z4B47_s3XYMM-DFe7LEbTeE',
+        authDomain: 'jwt-dispenser.firebaseapp.com',
+        projectId: 'jwt-dispenser',
+        storageBucket: 'jwt-dispenser.appspot.com',
+        messagingSenderId: '413915959575',
+        appId: '1:413915959575:web:9add49b16d7fd30645e752',
+        measurementId: 'G-YW3GJF3XK6',
+      }
+      const app = initializeApp(firebaseConfig)
+      const analytics = getAnalytics(app)
+      document.addEventListener('jwt-dispenser:generated', () => {
+        logEvent(analytics, 'jwt_generated')
+      })
+      document.addEventListener('jwt-dispenser:copied', () => {
+        logEvent(analytics, 'jwt_copied')
+      })
+    </script>
   </body>
 </html>
