@@ -68,6 +68,10 @@
                 placeholder=""
                 readonly
                 x-bind:value="$store.jwt"
+                style="
+                  font-family: var(--bs-font-monospace);
+                  font-size: 0.875em;
+                "
               />
               <button
                 class="btn btn-outline-secondary"
@@ -79,9 +83,12 @@
             </div>
             <p class="mb-0">
               <strong>Only send this JWT to your own systems.</strong> Do not
-              send this JWT to anyone or any system that you do not trust. This
-              JWT expires <span x-text="$store.expiry"></span> after issuance.
-              Once it expires, you must get a new token.
+              send this JWT to anyone or any system that you do not trust. Do
+              not display the JWT in public until it is expired. Anyone with
+              access to this JWT can impersonate you throughout the token’s
+              lifespan. This JWT expires
+              <span x-text="$store.expiry"></span> after issuance. Once it
+              expires, you must get a new token.
             </p>
           </div>
         </div>
